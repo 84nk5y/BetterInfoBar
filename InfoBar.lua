@@ -102,6 +102,8 @@ function InfoBarFrameMixin:OnEvent(event, ...)
             self.fpsTicker = C_Timer.NewTicker(FPS_UPDATERATE, function() self:UpdateFps() end)
             self.tokenTicker = C_Timer.NewTicker(TOKEN_UPDATE_RATE, function() self:UpdateTokenPrice() end)
 
+            C_Timer.After(60, function() self:UpdateTokenPrice() end)
+
             self:UnregisterEvent("PLAYER_ENTERING_WORLD")
         end
     elseif event == "PLAYER_MONEY" then
