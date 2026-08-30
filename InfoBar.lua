@@ -26,13 +26,11 @@ function InfoBarFrameMixin:OnLoad()
     self.averageMoneyHour = 0
     self.totalMoney = 0
     self.goldText = ""
-    self.tokenPriceText = "N/A"
     self.restedXpText = ""
     self.playTime = 0
     self.levelPlayTime = 0
     self.playTimeText = ""
     self.fpsTicker = nil
-    self.tokenTicker = nil
 
     local backdrop_header = {
         bgFile = "Interface\\TutorialFrame\\TutorialFrameBackground",
@@ -77,7 +75,6 @@ function InfoBarFrameMixin:OnEvent(event, ...)
             SavedVars_History[self.year][self.month] = SavedVars_History[self.year][self.month] or {}
             SavedVars_CurrentMonth = SavedVars_History[self.year][self.month]
             SavedVars_CurrentMonth.Gains = SavedVars_CurrentMonth.Gains or 0
-            SavedVars_CurrentMonth.Token = SavedVars_CurrentMonth.Token or 9999999999
             SavedVars_CurrentMonth.PlayTime = SavedVars_CurrentMonth.PlayTime or 1
 
             if self.month > 1 then
@@ -97,12 +94,8 @@ function InfoBarFrameMixin:OnEvent(event, ...)
             RequestTimePlayed()
 
             if self.fpsTicker then self.fpsTicker:Cancel() end
-            if self.tokenTicker then self.tokenTicker:Cancel() end
 
             self.fpsTicker = C_Timer.NewTicker(FPS_UPDATERATE, function() self:UpdateFps() end)
-            self.tokenTicker = C_Timer.NewTicker(TOKEN_UPDATE_RATE, function() self:UpdateTokenPrice() end)
-
-            C_Timer.After(60, function() self:UpdateTokenPrice() end)
 
             self:UnregisterEvent("PLAYER_ENTERING_WORLD")
         end
@@ -145,26 +138,7 @@ function InfoBarFrameMixin:UpdateFps()
     local lagHomeText = format("|cff%s%d|r ms", self:GetThresholdHexColor(lagHome, 1000, 500, 250, 100, 0), lagHome)
     local lagWorldText = format("|cff%s%d|r ms", self:GetThresholdHexColor(lagWorld, 1000, 500, 250, 100, 0), lagWorld)
 
-    self.text:SetText(fpsText.." | |cFF99CC33H:|r"..lagHomeText.." | |cFF99CC33W:|r"..lagWorldText.." | "..self.goldText.." | "..self.tokenPriceText..self.restedXpText)
-end
-
-function InfoBarFrameMixin:UpdateTokenPrice()
-    if UnitAffectingCombat("player") then return end
-
-    C_WowTokenPublic.UpdateMarketPrice()
-
-    C_Timer.After(2, function()
-        local text = "N/A"
-        local tokenPrice = C_WowTokenPublic.GetCurrentMarketPrice()
-
-        if tokenPrice and tokenPrice > 0 then
-            text = GetMoneyString(tokenPrice, true).." ("..math.floor(self.totalMoney / tokenPrice) ..")"
-
-            SavedVars_CurrentMonth.Token = math.min(SavedVars_CurrentMonth.Token, tokenPrice)
-        end
-
-        self.tokenPriceText = text
-    end)
+    self.text:SetText(fpsText.." | |cFF99CC33H:|r"..lagHomeText.." | |cFF99CC33W:|r"..lagWorldText.." | "..self.goldText..self.restedXpText)
 end
 
 function InfoBarFrameMixin:CalculateMoney()
@@ -186,9 +160,7 @@ function InfoBarFrameMixin:CalculateMoney()
         self.totalMoney = self.totalMoney + data.Money
     end
 
-    local totalGold = math.floor(self.totalMoney / 10000) * 10000
-
-    self.goldText = GetMoneyString(totalGold, true)
+    self.goldText = GetMoneyString(self.totalMoney, true)
 end
 
 function InfoBarFrameMixin:CalculateRestedXp()

@@ -3,7 +3,7 @@
     <Script file="InfoBar.lua"/>
 
     <Frame name="BetterInfoBarFrame" parent="UIParent" inherits="BackdropTemplate" mixin="InfoBarFrameMixin">
-        <Size x="500" y="22"/>
+        <Size x="400" y="22"/>
 
         <Anchors>
             <Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="BOTTOMLEFT">
