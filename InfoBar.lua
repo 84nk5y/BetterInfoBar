@@ -25,8 +25,8 @@ function InfoBarFrameMixin:OnLoad()
     self.averageMoneyDay = 0
     self.averageMoneyHour = 0
     self.totalMoney = 0
-    self.goldText = ""
-    self.tokenPriceText = "N/A"
+    self.moneyText = ""
+    self.tokenPriceText = ""
     self.restedXpText = ""
     self.playTime = 0
     self.levelPlayTime = 0
@@ -145,7 +145,7 @@ function InfoBarFrameMixin:UpdateFps()
     local lagHomeText = format("|cff%s%d|r ms", self:GetThresholdHexColor(lagHome, 1000, 500, 250, 100, 0), lagHome)
     local lagWorldText = format("|cff%s%d|r ms", self:GetThresholdHexColor(lagWorld, 1000, 500, 250, 100, 0), lagWorld)
 
-    self.text:SetText(fpsText.." | |cFF99CC33H:|r"..lagHomeText.." | |cFF99CC33W:|r"..lagWorldText.." | "..self.goldText.." | "..self.tokenPriceText..self.restedXpText)
+    self.text:SetText(fpsText.." | |cFF99CC33H:|r"..lagHomeText.." | |cFF99CC33W:|r"..lagWorldText.." | "..self.moneyText..self.tokenPriceText..self.restedXpText)
 end
 
 function InfoBarFrameMixin:UpdateTokenPrice()
@@ -163,7 +163,7 @@ function InfoBarFrameMixin:UpdateTokenPrice()
             SavedVars_CurrentMonth.Token = math.min(SavedVars_CurrentMonth.Token, tokenPrice)
         end
 
-        self.tokenPriceText = text
+        self.tokenPriceText = " | ".. text
     end)
 end
 
@@ -186,9 +186,16 @@ function InfoBarFrameMixin:CalculateMoney()
         self.totalMoney = self.totalMoney + data.Money
     end
 
-    local totalGold = math.floor(self.totalMoney / 10000) * 10000
+    local totalGold = self.totalMoney
+    local thresholds = {10000, 100}
+    for _, threshold in ipairs(thresholds) do
+        if self.totalMoney >= threshold then
+            totalGold = math.floor(self.totalMoney / threshold) * threshold
+            break
+        end
+    end
 
-    self.goldText = GetMoneyString(totalGold, true)
+    self.moneyText = GetMoneyString(totalGold, true)
 end
 
 function InfoBarFrameMixin:CalculateRestedXp()
