@@ -154,16 +154,15 @@ function InfoBarFrameMixin:UpdateTokenPrice()
     C_WowTokenPublic.UpdateMarketPrice()
 
     C_Timer.After(2, function()
-        local text = "N/A"
         local tokenPrice = C_WowTokenPublic.GetCurrentMarketPrice()
 
         if tokenPrice and tokenPrice > 0 then
-            text = GetMoneyString(tokenPrice, true).." ("..math.floor(self.totalMoney / tokenPrice) ..")"
+            local text = GetMoneyString(tokenPrice, true).." ("..math.floor(self.totalMoney / tokenPrice) ..")"
 
             SavedVars_CurrentMonth.Token = math.min(SavedVars_CurrentMonth.Token, tokenPrice)
-        end
 
-        self.tokenPriceText = " | ".. text
+            self.tokenPriceText = " | ".. text
+        end
     end)
 end
 
