@@ -7,9 +7,9 @@ local TOKEN_UPDATE_RATE = 5 * 60
 
 
 BIB_SavedVars = BIB_SavedVars or { Char = {}, History = {} }
-local SavedVars_Chars = nil
+local SavedVars_Chars = BIB_SavedVars["Char"]
 local SavedVars_Player = nil
-local SavedVars_History = nil
+local SavedVars_History = BIB_SavedVars["History"]
 local SavedVars_PreviousMonth = nil
 local SavedVars_CurrentMonth = nil
 
